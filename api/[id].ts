@@ -26,10 +26,11 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 			end: dtend && DateTime.fromISO(dtend?.[2]).setZone(dtend[0]?.tzid),
 			title: summary[2],
 			description: description[2],
-			TZ: dtstart[0]?.tzid,
+			// TZ: dtstart[0]?.tzid,
 		}));
 
-	const TZ = DateTime.fromISO(events[0]?.start).zoneName;
+	const TZ =
+		DateTime.fromISO(events[0]?.start)?.zoneName ?? "America/New_York";
 	const timestamp = DateTime.now().setZone(TZ);
 
 	DateTime.fromISO(events[0]?.start);
