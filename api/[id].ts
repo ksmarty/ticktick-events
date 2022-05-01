@@ -14,14 +14,14 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 
 	const raw_ical = await res.text();
 
-	const events = parse(raw_ical)[2]
+	const events: Event[] = parse(raw_ical)[2]
 		.map(([ignore, event]: [string, any[], any[]]) =>
 			event.reduce(
 				(props, prop) => ({ ...props, [prop[0]]: prop.slice(1) }),
 				{}
 			)
 		)
-		.map(({ dtstart, dtend, summary, description }: Event) => ({
+		.map(({ dtstart, dtend, summary, description }: RawEvent) => ({
 			start: DateTime.fromISO(dtstart[2]).setZone(dtstart[0]?.tzid),
 			end: dtend && DateTime.fromISO(dtend?.[2]).setZone(dtend[0]?.tzid),
 			title: summary[2],
@@ -29,11 +29,10 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 			// TZ: dtstart[0]?.tzid,
 		}));
 
-	const TZ =
-		DateTime.fromISO(events[0]?.start)?.zoneName ?? "America/New_York";
-	const timestamp = DateTime.now().setZone(TZ);
+	events.sort(({ start: a }, { start: b }) => (a < b ? -1 : 1));
 
-	DateTime.fromISO(events[0]?.start);
+	const TZ = events?.[0].start?.zoneName ?? "America/New_York";
+	const timestamp = DateTime.now().setZone(TZ);
 
 	const data = {
 		timestamp,
@@ -49,7 +48,7 @@ interface Props {
 	tzid?: string;
 }
 
-interface Event {
+interface RawEvent {
 	dtstamp: EventProps;
 	dtstart: EventProps;
 	dtend?: EventProps;
@@ -59,4 +58,11 @@ interface Event {
 	sequence: [Props, string, number];
 	tzid: EventProps;
 	rrule?: [Props, string, object];
+}
+
+interface Event {
+	start: DateTime;
+	end?: DateTime;
+	title: string;
+	description: string;
 }
