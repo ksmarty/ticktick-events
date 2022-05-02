@@ -43,9 +43,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 };
 
 const date = (d: string) =>
-	DateTime.fromISO(d).setZone("UTC+24", {
-		keepLocalTime: true,
-	});
+	DateTime.fromISO(d, { zone: "utc" }).toISO().slice(0, -1);
 
 type EventProps = [Props, string, string];
 
@@ -66,8 +64,8 @@ interface RawEvent {
 }
 
 interface Event {
-	start: DateTime;
-	end?: DateTime;
+	start: string;
+	end?: string;
 	title: string;
 	description: string;
 	TZ?: string;
