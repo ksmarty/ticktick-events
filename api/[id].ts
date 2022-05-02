@@ -15,18 +15,18 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 	const raw_ical = await res.text();
 
 	const events: Event[] = parse(raw_ical)[2]
-		.map(([ignore, event]: [string, any[], any[]]) =>
+		.map(([, event]: [string, any[], any[]]) =>
 			event.reduce(
 				(props, prop) => ({ ...props, [prop[0]]: prop.slice(1) }),
 				{}
 			)
 		)
 		.map(({ dtstart, dtend, summary, description }: RawEvent) => ({
-			start: DateTime.fromISO(dtstart[2]).setZone(dtstart[0]?.tzid),
-			end: dtend && DateTime.fromISO(dtend?.[2]).setZone(dtend[0]?.tzid),
+			start: date(dtstart[2]),
+			end: dtend && date(dtend?.[2]),
 			title: summary[2],
 			description: description[2],
-			// TZ: dtstart[0]?.tzid,
+			TZ: dtstart[0]?.tzid,
 		}));
 
 	events.sort(({ start: a }, { start: b }) => (a < b ? -1 : 1));
@@ -41,6 +41,11 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 
 	response.end(JSON.stringify(data, undefined, 2));
 };
+
+const date = (d: string) =>
+	DateTime.fromISO(d).setZone("utc", {
+		keepLocalTime: true,
+	});
 
 type EventProps = [Props, string, string];
 
