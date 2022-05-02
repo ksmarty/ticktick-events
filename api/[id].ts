@@ -43,7 +43,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 };
 
 const date = (d: string) =>
-	DateTime.fromISO(d).setZone("utc", {
+	DateTime.fromISO(d).setZone("UTC+24", {
 		keepLocalTime: true,
 	});
 
