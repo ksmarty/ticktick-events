@@ -31,7 +31,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 
 	events.sort(({ start: a }, { start: b }) => (a < b ? -1 : 1));
 
-	const TZ = events?.[0].start?.zoneName ?? "America/New_York";
+	const TZ = events?.[0]?.TZ ?? "America/New_York";
 	const timestamp = DateTime.now().setZone(TZ);
 
 	const data = {
@@ -70,4 +70,5 @@ interface Event {
 	end?: DateTime;
 	title: string;
 	description: string;
+	TZ?: string;
 }
