@@ -6,7 +6,20 @@ A public instance is hosted at https://ticktick-events.vercel.app/, or you can s
 
 ## API
 
-`/api/[TickTick_UUID]`:
+`/api/events`:
+
+#### Request
+
+```json
+{
+	"id": [TickTickID],
+	"voltage": 3.2501,
+	"upstash_url": [URL],
+	"upstash_token": [TOKEN]
+}
+```
+
+#### Response
 
 ```json
 {
