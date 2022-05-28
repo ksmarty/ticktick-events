@@ -2,9 +2,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fetch from "cross-fetch";
 import { parse } from "ical.js";
 import { DateTime } from "luxon";
+import { Redis } from "@upstash/redis";
 
 export default async (request: NextApiRequest, response: NextApiResponse) => {
-	const { id } = request.query;
+	const { id, voltage, upstash_url, upstash_token } = request.body;
+
+	if (voltage && upstash_url && upstash_token)
+		await new Redis({ url: upstash_url, token: upstash_token }).set(
+			DateTime.now().toISO(),
+			voltage
+		);
 
 	const res = await fetch(
 		`https://api.ticktick.com/pub/calendar/feeds/${id}`

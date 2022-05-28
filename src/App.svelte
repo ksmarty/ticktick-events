@@ -72,11 +72,14 @@
 </main>
 
 <style>
+	@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;700&display=swap");
+
 	main {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translateX(-50%) translateY(-50%);
+		font-family: "Lexend Deca", sans-serif;
 	}
 	:global(body) {
 		background: #16191b;
