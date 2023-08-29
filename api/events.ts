@@ -9,6 +9,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         id,
         showEnd = "true",
         maxEvents = Infinity,
+        pretty = "true",
     } = request.body || request.query;
 
     const keepEndDates = showEnd === "true" ? true : undefined;
@@ -40,7 +41,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         .sort(({ start: a }, { start: b }) => (a < b ? -1 : 1))
         .filter((_event: Event, i: number) => i < maxEvents);
 
-    const TZ = events?.[0]?.TZ ?? "America/New_York";
+    const TZ = events.filter((e) => e.TZ)?.[0].TZ ?? "America/New_York";
 
     const data = {
         hash: createHash("sha256").update(events.toString()).digest("hex"),
@@ -48,7 +49,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         events,
     };
 
-    response.end(JSON.stringify(data, undefined, 2));
+    response.end(JSON.stringify(data, undefined, pretty == "true" ? 2 : 0));
 };
 
 const date = (d: string) =>
