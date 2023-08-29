@@ -4,7 +4,13 @@ import ical from "ical.js";
 import { DateTime } from "luxon";
 
 export default async (request: NextApiRequest, response: NextApiResponse) => {
-    const { id } = request.body || request.query;
+    const {
+        id,
+        showEnd = "true",
+        maxEvents = 0,
+    } = request.body || request.query;
+
+    const keepEndDates = showEnd === "true" ? true : undefined;
 
     if (!id) throw new Error("Invalid ID!");
 
@@ -26,7 +32,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         )
         .map(({ dtstart, dtend, summary }: RawEvent) => ({
             start: date(dtstart[2]),
-            end: dtend && date(dtend?.[2]),
+            end: keepEndDates && dtend && date(dtend?.[2]),
             title: summary[2],
             TZ: dtstart[0]?.tzid,
         }));
@@ -38,7 +44,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 
     const data = {
         timestamp,
-        events,
+        events: maxEvents == 0 ? events : events.slice(0, maxEvents),
     };
 
     response.end(JSON.stringify(data, undefined, 2));
