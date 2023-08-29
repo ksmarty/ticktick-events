@@ -41,13 +41,11 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         .filter((_event: Event, i: number) => i < maxEvents);
 
     const TZ = events?.[0]?.TZ ?? "America/New_York";
-    const timestamp = DateTime.now().setZone(TZ);
 
     const data = {
         hash: createHash("sha256").update(events.toString()).digest("hex"),
-        timestamp,
+        timestamp: DateTime.now().setZone(TZ),
         events,
-        // events: events.slice(0, maxEvents ?? events.length),
     };
 
     response.end(JSON.stringify(data, undefined, 2));
