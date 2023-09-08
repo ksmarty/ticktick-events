@@ -9,7 +9,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         id,
         showEnd = "true",
         maxEvents = Infinity,
-        pretty = "true",
+        pretty = "false",
         hash,
         weather = "false",
         lat,

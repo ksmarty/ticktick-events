@@ -45,7 +45,7 @@
             </tr>
             <tr>
                 <td>
-                    <b>pretty (true)</b>
+                    <b>pretty (false)</b>
                 </td>
                 <td> Pretty print the returned JSON </td>
             </tr>

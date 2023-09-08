@@ -16,7 +16,7 @@ A public instance is hosted at https://ticktick-events.vercel.app/, or you can s
 	"showEnd": true, 	// Show end dates
 	"maxEvents": 4,		// Maximum number of events to be returned
 	"hash": [hash],		// Hash of previous call. Used to check if modified
-	"pretty": true,		// Pretty print the returned JSON
+	"pretty": false,	// Pretty print the returned JSON
     "weater": false,    // Include weather data
     "lat": null,        // Position latitude
     "lon": null         // Position longitude
@@ -50,6 +50,12 @@ A public instance is hosted at https://ticktick-events.vercel.app/, or you can s
             "start": "2022-06-26T00:00:00.000",
             "title": "Write that line of code"
         }
-    ]
+    ],
+    "weather": {
+        "current": 16.4,
+        "code": 0,
+        "high": 22.1,
+        "low": 12.2
+    }
 }
 ```
