@@ -16,6 +16,8 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         lon,
     } = request.body || request.query;
 
+    console.log("Hash: " + hash);
+
     const keepEndDates = showEnd === "true" ? true : undefined;
 
     if (!id) return response.status(400).json({ error: "ID not included!" });
@@ -70,9 +72,13 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
                   })
             : undefined;
 
+    const timestamp = DateTime.now().setZone(TZ);
+
     const data = {
-        hash: createHash("sha256").update(events.toString()).digest("hex"),
-        timestamp: DateTime.now().setZone(TZ),
+        hash: createHash("sha256")
+            .update(events.toString() + timestamp.day)
+            .digest("hex"),
+        timestamp,
         events,
         weather: weatherData,
     };
