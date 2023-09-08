@@ -18,16 +18,12 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 
     const keepEndDates = showEnd === "true" ? true : undefined;
 
-    if (!id) throw new Error("Invalid ID!");
+    if (!id) return response.status(400).json({ error: "ID not included!" });
 
     const events: Event[] = await fetch(
         `https://api.ticktick.com/pub/calendar/feeds/${id}`
     )
-        .then((res) => {
-            if (res.status >= 400) throw new Error("Bad response from server!");
-
-            return res.text();
-        })
+        .then((res) => res.text())
         .then((raw_ical) =>
             ical
                 .parse(raw_ical)[2]
@@ -50,7 +46,13 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
                 .filter((_event: Event, i: number) => i < maxEvents)
         );
 
-    const TZ = events.filter((e) => e.TZ)?.[0].TZ ?? "America/New_York";
+    if (
+        /Calendar subscription url not available/g.test(JSON.stringify(events))
+    ) {
+        return response.status(400).json({ error: "Invalid ID!" });
+    }
+
+    const TZ = events.filter((e) => e.TZ)?.[0]?.TZ ?? "America/New_York";
 
     const weatherData =
         weather && lat && lon
@@ -75,7 +77,8 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         weather: weatherData,
     };
 
-    if (hash === data.hash) return response.status(304).end("Data unchanged");
+    if (hash === data.hash)
+        return response.status(304).json({ message: "Data unchanged" });
 
     response.end(JSON.stringify(data, undefined, pretty == "true" ? 2 : 0));
 };
