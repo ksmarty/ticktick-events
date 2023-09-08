@@ -20,30 +20,35 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 
     if (!id) throw new Error("Invalid ID!");
 
-    const res = await fetch(
+    const events: Event[] = await fetch(
         `https://api.ticktick.com/pub/calendar/feeds/${id}`
-    );
+    )
+        .then((res) => {
+            if (res.status >= 400) throw new Error("Bad response from server!");
 
-    if (res.status >= 400) throw new Error("Bad response from server!");
-
-    const raw_ical = await res.text();
-
-    const events: Event[] = ical
-        .parse(raw_ical)[2]
-        .map(([, event]: [string, any[], any[]]) =>
-            event.reduce(
-                (props, prop) => ({ ...props, [prop[0]]: prop.slice(1) }),
-                {}
-            )
-        )
-        .map(({ dtstart, dtend, summary }: RawEvent) => ({
-            start: date(dtstart[2]),
-            end: keepEndDates && dtend && date(dtend?.[2]),
-            title: summary[2],
-            TZ: dtstart[0]?.tzid,
-        }))
-        .sort(({ start: a }, { start: b }) => (a < b ? -1 : 1))
-        .filter((_event: Event, i: number) => i < maxEvents);
+            return res.text();
+        })
+        .then((raw_ical) =>
+            ical
+                .parse(raw_ical)[2]
+                .map(([, event]: [string, any[], any[]]) =>
+                    event.reduce(
+                        (props, prop) => ({
+                            ...props,
+                            [prop[0]]: prop.slice(1),
+                        }),
+                        {}
+                    )
+                )
+                .map(({ dtstart, dtend, summary }: RawEvent) => ({
+                    start: date(dtstart[2]),
+                    end: keepEndDates && dtend && date(dtend?.[2]),
+                    title: summary[2],
+                    TZ: dtstart[0]?.tzid,
+                }))
+                .sort(({ start: a }, { start: b }) => (a < b ? -1 : 1))
+                .filter((_event: Event, i: number) => i < maxEvents)
+        );
 
     const TZ = events.filter((e) => e.TZ)?.[0].TZ ?? "America/New_York";
 
@@ -54,7 +59,6 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
               )
                   .then((res) => res.json())
                   .then(({ current_weather, daily }) => {
-                      console.log(res);
                       return {
                           current: current_weather["temperature"],
                           code: current_weather["weathercode"],
