@@ -13,9 +13,13 @@ A public instance is hosted at https://ticktick-events.vercel.app/, or you can s
 ```json
 {
 	"id": [TickTickID],
-	"voltage": 3.2501,
-	"upstash_url": [URL],
-	"upstash_token": [TOKEN]
+	"showEnd": true, 	// Show end dates
+	"maxEvents": 4,		// Maximum number of events to be returned
+	"hash": [hash],		// Hash of previous call. Used to check if modified
+	"pretty": true,		// Pretty print the returned JSON
+    "weater": false,    // Include weather data
+    "lat": null,        // Position latitude
+    "lon": null         // Position longitude
 }
 ```
 
@@ -23,32 +27,29 @@ A public instance is hosted at https://ticktick-events.vercel.app/, or you can s
 
 ```json
 {
-	"timestamp": "2022-05-03T17:30:23.578+00:00",
-	"events": [
-		{
-			"start": "2022-05-03T20:00:00.000",
-			"end": "2022-05-03T20:30:00.000",
-			"title": "Very Cool Event",
-			"description": "This is gonna be an epic event",
-			"TZ": "America/New_York"
-		},
-		{
-			"start": "2022-05-04T00:00:00.000",
-			"title": "Something important",
-			"description": "Very important"
-		},
-		{
-			"start": "2022-06-24T08:00:00.000",
-			"end": "2022-06-24T08:30:00.000",
-			"title": "Pool Party",
-			"description": "",
-			"TZ": "America/New_York"
-		},
-		{
-			"start": "2022-06-26T00:00:00.000",
-			"title": "Write that line of code",
-			"description": "[x,y] = [y,x]"
-		}
-	]
+    "hash": "85d49e5f9d2d44e240a33a73b3815b1c46c195bf1e3ff0e3459a2d73ff9ec523",
+    "timestamp": "2022-05-03T17:30:23.578+00:00",
+    "events": [
+        {
+            "start": "2022-05-03T20:00:00.000",
+            "end": "2022-05-03T20:30:00.000",
+            "title": "Very Cool Event",
+            "TZ": "America/New_York"
+        },
+        {
+            "start": "2022-05-04T00:00:00.000",
+            "title": "Something important"
+        },
+        {
+            "start": "2022-06-24T08:00:00.000",
+            "end": "2022-06-24T08:30:00.000",
+            "title": "Pool Party",
+            "TZ": "America/New_York"
+        },
+        {
+            "start": "2022-06-26T00:00:00.000",
+            "title": "Write that line of code"
+        }
+    ]
 }
 ```

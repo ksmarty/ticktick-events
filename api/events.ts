@@ -10,6 +10,10 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         showEnd = "true",
         maxEvents = Infinity,
         pretty = "true",
+        hash,
+        weather = "false",
+        lat,
+        lon,
     } = request.body || request.query;
 
     const keepEndDates = showEnd === "true" ? true : undefined;
@@ -43,11 +47,31 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 
     const TZ = events.filter((e) => e.TZ)?.[0].TZ ?? "America/New_York";
 
+    const weatherData =
+        weather && lat && lon
+            ? await fetch(
+                  `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=apparent_temperature_max,apparent_temperature_min&timezone=${TZ}&forecast_days=1&current_weather=true`
+              )
+                  .then((res) => res.json())
+                  .then(({ current_weather, daily }) => {
+                      console.log(res);
+                      return {
+                          current: current_weather["temperature"],
+                          code: current_weather["weathercode"],
+                          high: daily["apparent_temperature_max"][0],
+                          low: daily["apparent_temperature_min"][0],
+                      };
+                  })
+            : undefined;
+
     const data = {
         hash: createHash("sha256").update(events.toString()).digest("hex"),
         timestamp: DateTime.now().setZone(TZ),
         events,
+        weather: weatherData,
     };
+
+    if (hash === data.hash) return response.status(304).end("Data unchanged");
 
     response.end(JSON.stringify(data, undefined, pretty == "true" ? 2 : 0));
 };
