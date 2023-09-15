@@ -62,14 +62,12 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
                   `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=apparent_temperature_max,apparent_temperature_min&timezone=${TZ}&forecast_days=1&current_weather=true`
               )
                   .then((res) => res.json())
-                  .then(({ current_weather, daily }) => {
-                      return {
-                          current: current_weather["temperature"],
-                          code: current_weather["weathercode"],
-                          high: daily["apparent_temperature_max"][0],
-                          low: daily["apparent_temperature_min"][0],
-                      };
-                  })
+                  .then(({ current_weather, daily }) => ({
+                      current: Math.round(current_weather["temperature"]),
+                      code: current_weather["weathercode"],
+                      high: Math.round(daily["apparent_temperature_max"][0]),
+                      low: Math.round(daily["apparent_temperature_min"][0]),
+                  }))
             : undefined;
 
     const timestamp = DateTime.now().setZone(TZ);

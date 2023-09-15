@@ -52,10 +52,10 @@ A public instance is hosted at https://ticktick-events.vercel.app/, or you can s
         }
     ],
     "weather": {
-        "current": 16.4,
+        "current": 16,
         "code": 0,
-        "high": 22.1,
-        "low": 12.2
+        "high": 22,
+        "low": 12
     }
 }
 ```

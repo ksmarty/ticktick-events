@@ -132,10 +132,10 @@
     &rbrace;
   ],
   <span>"weather"</span>: &lbrace;
-      <span>"current"</span>: <span class="b">16.2</span>,
+      <span>"current"</span>: <span class="b">16</span>,
       <span>"code"</span>: <span class="b">0</span>,
-      <span>"high"</span>: <span class="b">21.4</span>,
-      <span>"low"</span>: <span class="b">11.9</span>
+      <span>"high"</span>: <span class="b">21</span>,
+      <span>"low"</span>: <span class="b">11</span>
   &rbrace;
 &rbrace;</code></pre>
 		</div>
