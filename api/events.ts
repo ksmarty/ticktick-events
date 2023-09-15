@@ -59,14 +59,15 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
     const weatherData =
         weather && lat && lon
             ? await fetch(
-                  `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=apparent_temperature_max,apparent_temperature_min&timezone=${TZ}&forecast_days=1&current_weather=true`
+                  `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=apparent_temperature_max,apparent_temperature_min&timezone=${TZ}&forecast_days=1&current_weather=true&hourly=is_day`
               )
                   .then((res) => res.json())
-                  .then(({ current_weather, daily }) => ({
+                  .then(({ current_weather, daily, hourly }) => ({
                       current: Math.round(current_weather["temperature"]),
                       code: current_weather["weathercode"],
                       high: Math.round(daily["apparent_temperature_max"][0]),
                       low: Math.round(daily["apparent_temperature_min"][0]),
+                      isDay: !!hourly.is_day[DateTime.now().hour],
                   }))
             : undefined;
 
