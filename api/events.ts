@@ -91,9 +91,10 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
     const timestamp = DateTime.now().setZone(TZ);
 
     const data = {
-        hash: createHash("sha256")
+        hash: createHash("shake128")
             .update(events.toString() + timestamp.day)
-            .digest("hex"),
+            .digest("hex")
+            .substring(0, 6),
         timestamp,
         events,
         weather: weatherData,

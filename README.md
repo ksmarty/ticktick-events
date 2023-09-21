@@ -27,7 +27,7 @@ A public instance is hosted at https://ticktick-events.vercel.app/, or you can s
 
 ```json
 {
-    "hash": "85d49e5f9d2d44e240a33a73b3815b1c46c195bf1e3ff0e3459a2d73ff9ec523",
+    "hash": "85d49e",
     "timestamp": "2022-05-03T17:30:23.578+00:00",
     "events": [
         {
