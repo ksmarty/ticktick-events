@@ -14,6 +14,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         weather = "false",
         lat,
         lon,
+        todoID,
     } = request.body || request.query;
 
     console.log("Hash: " + hash);
@@ -48,11 +49,27 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
                 .filter((_event: Event, i: number) => i < maxEvents)
         );
 
-    if (
-        /Calendar subscription url not available/g.test(JSON.stringify(events))
-    ) {
+    if (/Calendar subscription url not available/g.test(JSON.stringify(events)))
         return response.status(400).json({ error: "Invalid ID!" });
-    }
+
+    const todo = await fetch(
+        `https://api.ticktick.com/pub/calendar/feeds/${todoID}`
+    )
+        .then((res) => res.text())
+        .then((raw_ical) =>
+            ical
+                .parse(raw_ical)[2]
+                .map(([, event]: [string, any[], any[]]) =>
+                    event.reduce(
+                        (props, prop) => ({
+                            ...props,
+                            [prop[0]]: prop.slice(1),
+                        }),
+                        {}
+                    )
+                )
+                .map(({ summary }: RawEvent) => summary[2])
+        );
 
     const TZ = events.filter((e) => e.TZ)?.[0]?.TZ ?? "America/New_York";
 
@@ -80,6 +97,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         timestamp,
         events,
         weather: weatherData,
+        todo,
     };
 
     if (hash === data.hash)
