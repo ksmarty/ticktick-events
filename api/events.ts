@@ -14,10 +14,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
         weather = "false",
         lat,
         lon,
-        todoID,
     } = request.body || request.query;
-
-    console.log("Hash: " + hash);
 
     const keepEndDates = showEnd === "true" ? true : undefined;
 
@@ -52,25 +49,6 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
     if (/Calendar subscription url not available/g.test(JSON.stringify(events)))
         return response.status(400).json({ error: "Invalid ID!" });
 
-    const todo = await fetch(
-        `https://api.ticktick.com/pub/calendar/feeds/${todoID}`
-    )
-        .then((res) => res.text())
-        .then((raw_ical) =>
-            ical
-                .parse(raw_ical)[2]
-                .map(([, event]: [string, any[], any[]]) =>
-                    event.reduce(
-                        (props, prop) => ({
-                            ...props,
-                            [prop[0]]: prop.slice(1),
-                        }),
-                        {}
-                    )
-                )
-                .map(({ summary }: RawEvent) => summary[2])
-        );
-
     const TZ = events.filter((e) => e.TZ)?.[0]?.TZ ?? "America/New_York";
 
     const weatherData =
@@ -90,19 +68,17 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
 
     const timestamp = DateTime.now().setZone(TZ);
 
-    const data = {
-        hash: createHash("shake128")
-            .update(events.toString() + timestamp.day)
-            .digest("hex")
-            .substring(0, 6),
-        timestamp,
-        events,
-        weather: weatherData,
-        todo,
-    };
+    const generatedHash = createHash("shake128")
+        .update(events.toString() + timestamp.day)
+        .digest("hex")
+        .substring(0, 6);
 
-    if (hash === data.hash)
-        return response.status(304).json({ message: "Data unchanged" });
+    const data = {
+        hash: generatedHash,
+        timestamp,
+        events: hash === generatedHash ? undefined : events,
+        weather: weatherData,
+    };
 
     response.end(JSON.stringify(data, undefined, pretty == "true" ? 2 : 0));
 };
